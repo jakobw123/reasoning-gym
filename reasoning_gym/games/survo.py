@@ -38,9 +38,12 @@ class SurvoConfig:
         assert self.min_board_size > 3, "min_board_size must be greater than 3"
         assert self.max_board_size >= self.min_board_size, "max_board_size must be >= min_board_size"
         assert self.min_empty > 0, "min_empty must be > 0"
-        assert self.max_empty <= (self.min_board_size - 1) * (
-            self.min_board_size - 1
-        ), f"max_empty must be <= {(self.min_board_size - 1) * (self.min_board_size - 1)}"
+        # assert self.max_empty <= (self.min_board_size - 1) * (
+        #     self.min_board_size - 1
+        # ), f"max_empty must be <= {(self.min_board_size - 1) * (self.min_board_size - 1)}"
+        assert self.max_empty <= (self.max_board_size - 1) * (
+            self.max_board_size - 1
+        ), f"max_empty must be <= {(self.max_board_size - 1) * (self.max_board_size - 1)}"
         assert self.min_empty <= self.max_empty, "min_empty must be <= max_empty"
         assert self.min_num > 0, "min_num must be > 0"
         assert self.min_num < self.max_num, "min_num must be less than max_num"
@@ -65,10 +68,16 @@ class SurvoDataset(ProceduralDataset):
         return item
 
     def __getitem__(self, idx: int) -> dict:
-        rng = Random(self.config.seed + idx)
+        rng = Random(self.seed + idx)
 
         board_size = rng.randint(self.config.min_board_size, self.config.max_board_size)
-        num_empty = rng.randint(self.config.min_empty, self.config.max_empty)
+        
+        # For valid parameter alignment
+        max_capacity = (board_size - 1) * (board_size - 1)
+        actual_max_empty = min(self.config.max_empty, max_capacity)
+        actual_min_empty = min(self.config.min_empty, actual_max_empty)
+
+        num_empty = rng.randint(actual_min_empty, actual_max_empty)
 
         filled_matrix, puzzle, candidate_numbers = self._generate_valid_matrix(
             rng, board_size, num_empty, self.config.min_num, self.config.max_num
@@ -94,7 +103,7 @@ class SurvoDataset(ProceduralDataset):
                 "max_num": self.config.max_num,
                 "difficulty": {
                     "board_size": (self.config.min_board_size, self.config.max_board_size),
-                    "empty": (self.config.min_empty, self.config.max_empty),
+                    "empty": (actual_min_empty, actual_max_empty),
                 },
             },
         }

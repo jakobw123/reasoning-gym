@@ -40,16 +40,12 @@ class TsumegoConfig:
     size: int = 500
     seed: Optional[int] = None
 
-    def __post_init__(self):
-        """Validate configuration parameters"""
-        if self.min_board_size < 5:
-            raise ValueError("min_board_size must be at least 5")
-        if self.max_board_size > 19:
-            raise ValueError("max_board_size must be at most 19")
-        if self.min_board_size > self.max_board_size:
-            raise ValueError("min_board_size must be less than or equal to max_board_size")
-        if self.max_stones < 5:
-            raise ValueError("max_stones must be at least 5")
+    def validate(self) -> None:
+        """Validate configuration parameters."""
+        assert self.min_board_size >= 5, "min_board_size must be at least 5"
+        assert self.max_board_size <= 19, "max_board_size must be at most 19"
+        assert self.min_board_size <= self.max_board_size, "min_board_size must be less than or equal to max_board_size"
+        assert self.max_stones >= 5, "max_stones must be at least 5"
 
 
 class TsumegoDataset(ProceduralDataset):

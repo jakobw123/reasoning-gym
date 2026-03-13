@@ -42,6 +42,8 @@ class DefaultCurriculumContext(CurriculumContext):
         if isinstance(v, Iterable):
             return v
 
+        # lo_index = 0
+        # hi_index = 0
         if attr.ensure_interval:
             if self.mode == RangeAttributeMode.UPPER_BOUND:
                 hi_index = min(level + 1, len(attr.levels) - 1)
@@ -74,7 +76,13 @@ class DefaultCurriculumContext(CurriculumContext):
         if attr.ensure_interval and self.mode == RangeAttributeMode.LAST_K:
             # Re-compute indices so that we always return at least a two-value interval
             if hi_index == lo_index:
-                lo_index = max(0, hi_index - 1)
+                if hi_index == 0:
+                    # If we are at the very bottom level, push the upper bound forward
+                    hi_index = min(1, len(attr.levels) - 1)
+                else:
+                    lo_index = hi_index - 1
+
+
 
         lo = attr.get_level_value(lo_index)
         hi = attr.get_level_value(hi_index)

@@ -409,7 +409,7 @@ class KnightSwapCurriculum(BaseCurriculum):
         self._define_attributes(
             RangeAttributeDefinition(
                 name="nodes",
-                levels=[4, 6, 8, 10, 12],
+                levels=[6, 8, 10, 12, 14],
                 description="Number of nodes (board size)",
                 lower_field_name="min_nodes",
                 upper_field_name="max_nodes",

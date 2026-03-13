@@ -187,7 +187,7 @@ class ModuloGridCurriculum(BaseCurriculum):
             ScalarAttributeDefinition(
                 name="max_target",
                 field_name="max_target",
-                levels=[1, 0, 3, 7, 9, 21],
+                levels=[1, 3, 7, 9, 21],
                 description="Max target",
             ),
         )

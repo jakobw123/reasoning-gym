@@ -30,6 +30,12 @@ class PowerFunctionConfig:
     size: int = 500  # Virtual dataset size
     seed: Optional[int] = None
 
+    def validate(self) -> None:
+        """Validate configuration parameters"""
+        assert self.max_base >= self.min_base, "max_base must be >= min_base"
+        assert self.min_exponent >= 0, "min_exponent must be positive"
+        assert self.max_exponent >= self.min_exponent, "max_exponent must be >= min_exponent"
+
 
 class PowerFunctionDataset(ProceduralDataset):
     """Generates Power Function exercises with configurable difficulty"""

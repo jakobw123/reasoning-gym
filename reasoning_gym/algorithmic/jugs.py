@@ -99,7 +99,7 @@ def generate_puzzle(rng: Random, num_jugs: int = 3, difficulty: int = 6, max_att
     """
     for _ in range(max_attempts):
         # Generate capacities for each jug.
-        jug_capacities = [rng.randint(3, 3 + difficulty) for _ in range(num_jugs)]
+        jug_capacities = [rng.randint(3, 3 + difficulty * num_jugs) for _ in range(num_jugs)]
         max_cap = max(jug_capacities)
         # Compute gcd of all jug capacities.
         gcd_all = reduce(math.gcd, jug_capacities)
@@ -184,10 +184,12 @@ def verify_solution(puzzle, moves):
     return (any(w == target for w in state), states)
 
 
-def generate_jug_solution(jug_capacities: tuple[int, int, int], target: int) -> list[str]:
+def generate_jug_solution(jug_capacities: list[int], target: int) -> list[str]:
     """Solves the jug puzzle and returns a sequence of formatted steps."""
     capacities = list(jug_capacities)
-    initial_state = (0, 0, 0)
+    n = len(capacities)
+
+    initial_state = tuple([0] * n)
     queue = deque([(initial_state, [])])
     visited = set()
 
@@ -201,7 +203,7 @@ def generate_jug_solution(jug_capacities: tuple[int, int, int], target: int) -> 
             continue
         visited.add(state)
 
-        for i in range(3):  # Iterate over each jug
+        for i in range(n):  # Iterate over each jug
             # Fill jug i
             new_state = list(state)
             new_state[i] = capacities[i]
@@ -213,13 +215,15 @@ def generate_jug_solution(jug_capacities: tuple[int, int, int], target: int) -> 
             queue.append((tuple(new_state), path + [f"empty {chr(65 + i)}"]))
 
             # Pour from jug i to jug j
-            for j in range(3):
+            for j in range(n):
                 if i != j:
                     new_state = list(state)
                     pour_amount = min(state[i], capacities[j] - state[j])
-                    new_state[i] -= pour_amount
-                    new_state[j] += pour_amount
-                    queue.append((tuple(new_state), path + [f"pour {chr(65 + i)}->{chr(65 + j)}"]))
+                    
+                    if pour_amount > 0:
+                        new_state[i] -= pour_amount
+                        new_state[j] += pour_amount
+                        queue.append((tuple(new_state), path + [f"pour {chr(65 + i)}->{chr(65 + j)}"]))
 
     return ["No solution"]  # No valid solution found
 

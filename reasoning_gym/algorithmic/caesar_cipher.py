@@ -102,7 +102,7 @@ class CaesarCipherCurriculum(BaseCurriculum):
         self._define_attributes(
             RangeAttributeDefinition(
                 name="rotation",
-                levels=[5, 15, 25, 50],
+                levels=[5, 15, 25],
                 description="Max rotation for cipher",
                 lower_field_name="min_rotation",
                 upper_field_name="max_rotation",
